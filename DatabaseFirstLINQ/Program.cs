@@ -6,8 +6,8 @@ namespace DatabaseFirstLINQ
     {
         static void Main(string[] args)
         {
-            //problems problems = new problems();
-            //problems.runlinqqueries();
+            Problems problems = new Problems();
+            problems.RunLINQQueries();
         }
     }
 }
