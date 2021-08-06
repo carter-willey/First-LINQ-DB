@@ -19,8 +19,8 @@ namespace DatabaseFirstLINQ
             //ProblemTwo();
             //ProblemThree();
             //ProblemFour();
-            ProblemFive();
-            //ProblemSix();
+            //ProblemFive();
+            ProblemSix();
             //ProblemSeven();
             //ProblemEight();
             //ProblemNine();
@@ -113,8 +113,17 @@ namespace DatabaseFirstLINQ
 
         private void ProblemSix()
         {
+            DateTime date2016 = new DateTime(2016, 12, 31);
+            DateTime date2018 = new DateTime(2018, 1, 1);
             // Write a LINQ query that gets all of the users who registered AFTER 2016 and BEFORE 2018
             // Then print each user's email and registration date to the console.
+            var usersSpecific = _context.Users.Where(user => (DateTime.Compare((DateTime)user.RegistrationDate, date2016)) > 0 && (DateTime.Compare((DateTime)user.RegistrationDate, date2018)) < 0);
+
+            foreach (User user in usersSpecific)
+            {
+                Console.WriteLine(user.Email);
+                Console.WriteLine(user.RegistrationDate);
+            }
 
         }
 
