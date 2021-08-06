@@ -45,6 +45,7 @@ namespace DatabaseFirstLINQ
             // HINT: .ToList().Count
             var users = _context.Users;
             Console.WriteLine(users.ToList().Count); 
+
         }
 
         private void ProblemTwo()
