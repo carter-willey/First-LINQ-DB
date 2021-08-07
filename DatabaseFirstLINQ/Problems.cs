@@ -24,9 +24,9 @@ namespace DatabaseFirstLINQ
             //ProblemSeven();
             //ProblemEight();
             //ProblemNine();
-            ProblemTen();
+            //ProblemTen();
             //ProblemEleven();
-            //ProblemTwelve();
+            ProblemTwelve();
             //ProblemThirteen();
             //ProblemFourteen();
             //ProblemFifteen();
@@ -173,36 +173,35 @@ namespace DatabaseFirstLINQ
         {
             // Write a LINQ query that retreives all of the products in the shopping cart of users who have the role of "Employee".
             // Then print the user's email as well as the product's name, price, and quantity to the console.
+
             var shoppingCart = _context.ShoppingCarts.Include(sc => sc.User).Include(sc => sc.Product);
             var employeeUsers = _context.UserRoles.Include(em => em.Role).Include(ur => ur.User).Where(ur => ur.Role.RoleName == "Employee");
-            var query =
-                shoppingCart.Join(
-                    employeeUsers,
-                    employee => employee.UserId,
-                    cart => cart.User.Id,
-                    (employee, cart) => new
-                    { 
-                        Users = employee.User,
-                        Products = cart.User.
-                    }
-                );
-            foreach (var thing in query)
-            {
-                Console.WriteLine($"{thing.Products}");
-            }
-            
-
-            //foreach (ShoppingCart cart in shoppingCart) 
-            //{
-            //    foreach (UserRole employee in employeeUsers)
-            //    {
-            //        if (cart.UserId == employee.UserId)
-            //        {
-            //            Console.WriteLine($"Email: {employee.User.Email} Role: {employee.Role.RoleName}");
-            //            Console.WriteLine($"Product Name: {cart.Product.Name} Price: {cart.Product.Price} Quantity: {cart.Quantity}");
+            //var query =
+            //    shoppingCart.Join(
+            //        employeeUsers,
+            //        employee => employee.UserId,
+            //        cart => cart.User.Id,
+            //        (employee, cart) => new
+            //        { 
+            //            Users = employee.User
             //        }
-            //    }
-            //}
+            //    );
+            //foreach (var thing in query)
+            //{
+            //    Console.WriteLine($"{thing.Users.ShoppingCarts.}"); We tried this code above the foreach loop too. We weren't successful.
+            //} Sad faces...
+
+            foreach (ShoppingCart cart in shoppingCart)
+            {
+                foreach (UserRole employee in employeeUsers)
+                {
+                    if (cart.UserId == employee.UserId)
+                    {
+                        Console.WriteLine($"Email: {employee.User.Email} Role: {employee.Role.RoleName}");
+                        Console.WriteLine($"Product Name: {cart.Product.Name} Price: {cart.Product.Price} Quantity: {cart.Quantity}");
+                    }
+                }
+            }
 
         }
 
@@ -225,7 +224,14 @@ namespace DatabaseFirstLINQ
         private void ProblemTwelve()
         {
             // Create a new Product object and add that product to the Products table using LINQ.
-
+            Product newProduct = new Product()
+            {
+                Name = "Radio",
+                Description = "Best radio in town!",
+                Price = 190
+            };
+            _context.Products.Add(newProduct);
+            _context.SaveChanges();
         }
 
         private void ProblemThirteen()
