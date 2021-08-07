@@ -30,9 +30,9 @@ namespace DatabaseFirstLINQ
             //ProblemThirteen();
             //ProblemFourteen();
             //ProblemFifteen();
-            ProblemSixteen();
+            //ProblemSixteen();
             //ProblemSeventeen();
-            //ProblemEighteen();
+            ProblemEighteen();
             //ProblemNineteen();
             //ProblemTwenty();
             Console.ReadLine();
@@ -238,7 +238,7 @@ namespace DatabaseFirstLINQ
         {
             // Add the role of "Customer" to the user we just created in the UserRoles junction table using LINQ.
             var roleId = _context.Roles.Where(r => r.RoleName == "Customer").Select(r => r.Id).SingleOrDefault();
-            var userId = _context.Users.Where(u => u.Email == "david@gmail.com").Select(u => u.Id).SingleOrDefault();
+            var userId = _context.Users.Where(u => u.Email == "mike@gmail.com").Select(u => u.Id).SingleOrDefault();
             UserRole newUserRole = new UserRole()
             {
                 UserId = userId,
@@ -306,7 +306,9 @@ namespace DatabaseFirstLINQ
         private void ProblemEighteen()
         {
             // Delete the role relationship from the user who has the email "oda@gmail.com" using LINQ.
-
+            var userRole = _context.UserRoles.Where(ur => ur.User.Email == "oda@gmail.com").SingleOrDefault();
+            _context.UserRoles.Remove(userRole);
+            _context.SaveChanges();
         }
 
         private void ProblemNineteen()
