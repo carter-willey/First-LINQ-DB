@@ -3,6 +3,7 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using DatabaseFirstLINQ.Models;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace DatabaseFirstLINQ
 {
@@ -37,8 +38,8 @@ namespace DatabaseFirstLINQ
             //ProblemNineteen();
             //ProblemTwenty();
             //BonusOne();
-            BonusTwo();
-            //BonusThree();
+            //BonusTwo();
+            BonusThree();
             Console.ReadLine();
         }
 
@@ -316,11 +317,11 @@ namespace DatabaseFirstLINQ
 
         // <><><><><><><><> BONUS PROBLEMS <><><><><><><><><>
 
-        private void BonusOne()
+        private string BonusOne()
         {
             // Prompt the user to enter in an email and password through the console.
             // Take the email and password and check if the there is a person that matches that combination.
-            // Print "Signed In!" to the console if they exists and the values match otherwise print "Invalid Email or Password.".
+            // Print "Signed In!" to the console if they exists and the values match otherwise print "Invalid Email or Password."
             Console.WriteLine("Type in your email:");
             string email = Console.ReadLine();
             Console.WriteLine("Type in a password:");
@@ -339,10 +340,13 @@ namespace DatabaseFirstLINQ
             {
                 Console.WriteLine("Signed In!");
             }
+
             else
             {
                 Console.WriteLine("Invalid Email or Password.");
+                return "Not in There";
             }
+            return email;
         }
 
         private void BonusTwo()
@@ -386,43 +390,16 @@ namespace DatabaseFirstLINQ
 
                 }
                     
-                }
-                
-                
-
-               
-
-                //if (index == 0)
-                //{
-                //    total += cartList.ElementAt(index).Product.Price;
-                //    grandTotal += item.Product.Price * (decimal)item.Quantity;
-                //    index++;
-                //}
-                //else if (item.UserId != cartList.ElementAt(index - 1).UserId)
-                //{
-                //    Console.WriteLine(total);
-                //    total = 0;
-                //    total += cartList.ElementAt(index).Product.Price;
-                //    grandTotal += item.Product.Price * (decimal)item.Quantity;
-
-                //}
-                //else if (item.UserId == cartList.ElementAt(index).UserId)
-                //{
-                //    total += cartList.ElementAt(index).Product.Price;
-                //    grandTotal += item.Product.Price * (decimal)item.Quantity;
-                //    index++;
-                //}
-
-
-
+            }
             
             Console.WriteLine(grandTotal);
         }
 
-
+        public string userEmail = "";
         // BIG ONE
         private void BonusThree()
         {
+            userEmail = "";
             // 1. Create functionality for a user to sign in via the console
             // 2. If the user succesfully signs in
             // a. Give them a menu where they perform the following actions within the console
@@ -434,7 +411,88 @@ namespace DatabaseFirstLINQ
             // a. Display "Invalid Email or Password"
             // b. Re-prompt the user for credentials
 
+            string response = BonusOne();
+            while (response == "Not in There")
+            {
+                response = BonusOne();
+            }
+            if (response != "Not in There")
+            {
+                userEmail = response;
+                Console.WriteLine("Here are all the items in your shopping cart:");
+                SpecificUserShoppingCart(userEmail);
+                Console.WriteLine("\n");
+                Console.WriteLine("Here are all the products we have to offer:");
+                ViewAllProducts();
+                Console.WriteLine("\n");
+                Console.WriteLine("Choose from one of our products above by picking the number");
+                int product_id = int.Parse(Console.ReadLine());
+                GetProductId(product_id);
+            }
         }
 
+        private void GetProductId(int product_id)
+        {
+            // Write a LINQ query that retreives all of the products in the shopping cart of the user who has the email "afton@gmail.com".
+            // Then print the product's name, price, and quantity to the console
+            var shopping_cart = _context.ShoppingCarts.Include(sc => sc.Product).Include(sc => sc.User).Where(sc => sc.Product.Id == product_id && sc.User.Email == userEmail);
+            //if (!shopping_cart.Contains(product_id))
+            //{ 
+                
+            //}
+            
+            foreach (ShoppingCart item in shopping_cart)
+            {
+                if (item.ProductId == product_id)
+                {
+                    item.Quantity += 1;
+                    _context.ShoppingCarts.Update(item);
+                }
+            }
+            _context.SaveChanges();
+        }
+
+        private void SpecificUserShoppingCart(string response)
+        {
+            // Write a LINQ query that retreives all of the products in the shopping cart of the user who has the email "afton@gmail.com".
+            // Then print the product's name, price, and quantity to the console.
+            var shopping_cart = _context.ShoppingCarts.Include(sc => sc.User).Include(sc => sc.Product).Where(sc => sc.User.Email == response);
+            foreach (ShoppingCart product in shopping_cart)
+            {
+                Console.WriteLine($"{product.Product.Name} {product.Product.Price} {product.Quantity}");
+            }
+        }
+        private void ViewAllProducts()
+        {
+            // Write a LINQ query that retreives all of the products in the shopping cart of the user who has the email "afton@gmail.com".
+            // Then print the product's name, price, and quantity to the console.
+            var products = _context.Products;
+            foreach (Product product in products)
+            {
+                Console.WriteLine($"{product.Id} {product.Name} {product.Price}");
+            }
+        }
+
+        private void UpdateQuantity(int incomingUserId, int incomingProductId)
+        {
+            var product = _context.ShoppingCarts.Where(sc => sc.UserId == incomingUserId && sc.ProductId == incomingProductId).SingleOrDefault();
+            product.Quantity += 1;
+            
+            _context.ShoppingCarts.Update(product);
+            _context.SaveChanges();
+        }
+
+        private void CreateNewProductInCart()
+        {
+            // Create a new Product object and add that product to the Products table using LINQ.
+            Product newProduct = new Product()
+            {
+                Name = "Radio",
+                Description = "Best radio in town!",
+                Price = 190
+            };
+            _context.Products.Add(newProduct);
+            _context.SaveChanges();
+        }
     }
 }
