@@ -349,34 +349,74 @@ namespace DatabaseFirstLINQ
         {
             // Write a query that finds the total of every users shopping cart products using LINQ.
             // Display the total of each users shopping cart as well as the total of the toals to the console.
-            // _context.ShoppingCarts.Include(sc => sc.User).Include(sc => sc.Product).Where(sc => employeeUsers.Contains(sc.UserId));
-            var users = _context.Users;
-            var shoppingCart = _context.ShoppingCarts.Include(sc => sc.Product).Include(sc => sc.User);
-            decimal currentPerson = 0;
-            List<ShoppingCart> carts = new List<ShoppingCart>();
-
-            foreach (ShoppingCart cart in shoppingCart)
+            var shoppingCart = _context.ShoppingCarts.Include(sc => sc.Product).Include(sc => sc.User).OrderBy(sc => sc.UserId);
+            var users = _context.ShoppingCarts.Select(sc => sc.User).Distinct();
+            List<User> userList = new List<User>();
+            decimal total = 0;
+            decimal grandTotal = 0;
+            int index = 0;
+            foreach (User user in users)
             {
-                //Console.WriteLine($"User: {cart.User.Email} {cart.User.Id} ");
-                //Console.WriteLine($"Shopping cart: {cart.ProductId} {cart.Product.Name} {cart.Product.Price} {cart.Quantity} ");
-                //Console.WriteLine($"{cart.UserId}");
-                decimal tempPerson = 0;
-                if (cart.UserId == cart.User.Id)
-                {
-                    carts.Add(cart);
-                    tempPerson += cart.Product.Price * (decimal) cart.Quantity;
-                }
-                currentPerson = tempPerson;
-                Console.WriteLine($"{currentPerson}");
+                userList.Add(user);
             }
-
-            foreach (ShoppingCart c in carts)
+            ShoppingCart last = shoppingCart.Last();
+            foreach(ShoppingCart item in shoppingCart)
             {
-                if (c.UserId == c.User.Id)
+                if (item.UserId == userList.ElementAt(index).Id)
                 {
-                    Console.WriteLine($"{c.Product.Price}");
+                    total += item.Product.Price * (decimal)item.Quantity;
+                    grandTotal += item.Product.Price * (decimal)item.Quantity;
+
                 }
-            }
+                if (item.UserId != userList.ElementAt(index).Id)
+                {
+                    Console.WriteLine($"{userList.ElementAt(index).Email} has ${total} in their cart");
+                    total = 0;
+                    index++;
+                    if (item.UserId == userList.ElementAt(index).Id)
+                    {
+                        total += item.Product.Price * (decimal)item.Quantity;
+                        grandTotal += item.Product.Price * (decimal)item.Quantity;
+                        
+                    }
+                    if (item == last)
+                    {
+                        Console.WriteLine($"{userList.ElementAt(index).Email} has ${total} in their cart");
+                    }
+
+                }
+                    
+                }
+                
+                
+
+               
+
+                //if (index == 0)
+                //{
+                //    total += cartList.ElementAt(index).Product.Price;
+                //    grandTotal += item.Product.Price * (decimal)item.Quantity;
+                //    index++;
+                //}
+                //else if (item.UserId != cartList.ElementAt(index - 1).UserId)
+                //{
+                //    Console.WriteLine(total);
+                //    total = 0;
+                //    total += cartList.ElementAt(index).Product.Price;
+                //    grandTotal += item.Product.Price * (decimal)item.Quantity;
+
+                //}
+                //else if (item.UserId == cartList.ElementAt(index).UserId)
+                //{
+                //    total += cartList.ElementAt(index).Product.Price;
+                //    grandTotal += item.Product.Price * (decimal)item.Quantity;
+                //    index++;
+                //}
+
+
+
+            
+            Console.WriteLine(grandTotal);
         }
 
 
