@@ -2,6 +2,7 @@
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using DatabaseFirstLINQ.Models;
+using System.Collections.Generic;
 
 namespace DatabaseFirstLINQ
 {
@@ -35,8 +36,8 @@ namespace DatabaseFirstLINQ
             //ProblemEighteen();
             //ProblemNineteen();
             //ProblemTwenty();
-            BonusOne();
-            //BonusTwo();
+            //BonusOne();
+            BonusTwo();
             //BonusThree();
             Console.ReadLine();
         }
@@ -348,7 +349,36 @@ namespace DatabaseFirstLINQ
         {
             // Write a query that finds the total of every users shopping cart products using LINQ.
             // Display the total of each users shopping cart as well as the total of the toals to the console.
+            // _context.ShoppingCarts.Include(sc => sc.User).Include(sc => sc.Product).Where(sc => employeeUsers.Contains(sc.UserId));
+            var users = _context.Users;
+            var shoppingCart = _context.ShoppingCarts.Include(sc => sc.Product).Include(sc => sc.User);
+            decimal currentPerson = 0;
+            List<ShoppingCart> carts = new List<ShoppingCart>();
+
+            foreach (ShoppingCart cart in shoppingCart)
+            {
+                //Console.WriteLine($"User: {cart.User.Email} {cart.User.Id} ");
+                //Console.WriteLine($"Shopping cart: {cart.ProductId} {cart.Product.Name} {cart.Product.Price} {cart.Quantity} ");
+                //Console.WriteLine($"{cart.UserId}");
+                decimal tempPerson = 0;
+                if (cart.UserId == cart.User.Id)
+                {
+                    carts.Add(cart);
+                    tempPerson += cart.Product.Price * (decimal) cart.Quantity;
+                }
+                currentPerson = tempPerson;
+                Console.WriteLine($"{currentPerson}");
+            }
+
+            foreach (ShoppingCart c in carts)
+            {
+                if (c.UserId == c.User.Id)
+                {
+                    Console.WriteLine($"{c.Product.Price}");
+                }
+            }
         }
+
 
         // BIG ONE
         private void BonusThree()
