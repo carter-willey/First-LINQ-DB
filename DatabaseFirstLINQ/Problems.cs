@@ -24,7 +24,7 @@ namespace DatabaseFirstLINQ
             //ProblemSeven();
             //ProblemEight();
             //ProblemNine();
-            //ProblemTen();
+            ProblemTen();
             //ProblemEleven();
             //ProblemTwelve();
             //ProblemThirteen();
@@ -34,7 +34,7 @@ namespace DatabaseFirstLINQ
             //ProblemSeventeen();
             //ProblemEighteen();
             //ProblemNineteen();
-            ProblemTwenty();
+            //ProblemTwenty();
             Console.ReadLine();
         }
 
@@ -174,33 +174,12 @@ namespace DatabaseFirstLINQ
             // Write a LINQ query that retreives all of the products in the shopping cart of users who have the role of "Employee".
             // Then print the user's email as well as the product's name, price, and quantity to the console.
 
-            var shoppingCart = _context.ShoppingCarts.Include(sc => sc.User).Include(sc => sc.Product);
-            var employeeUsers = _context.UserRoles.Include(em => em.Role).Include(ur => ur.User).Where(ur => ur.Role.RoleName == "Employee");
-            //var query =
-            //    shoppingCart.Join(
-            //        employeeUsers,
-            //        employee => employee.UserId,
-            //        cart => cart.User.Id,
-            //        (employee, cart) => new
-            //        { 
-            //            Users = employee.User
-            //        }
-            //    );
-            //foreach (var thing in query)
-            //{
-            //    Console.WriteLine($"{thing.Users.ShoppingCarts.}"); We tried this code above the foreach loop too. We weren't successful.
-            //} Sad faces...
+            var employeeUsers = _context.UserRoles.Where(ur => ur.Role.RoleName == "Employee").Select(ur => ur.UserId); // 3, 4
+            var shoppingCart = _context.ShoppingCarts.Include(sc => sc.User).Include(sc => sc.Product).Where(sc => employeeUsers.Contains(sc.UserId));
 
-            foreach (ShoppingCart cart in shoppingCart)
+            foreach (var cart in shoppingCart)
             {
-                foreach (UserRole employee in employeeUsers)
-                {
-                    if (cart.UserId == employee.UserId)
-                    {
-                        Console.WriteLine($"Email: {employee.User.Email} Role: {employee.Role.RoleName}");
-                        Console.WriteLine($"Product Name: {cart.Product.Name} Price: {cart.Product.Price} Quantity: {cart.Quantity}");
-                    }
-                }
+                Console.WriteLine($"Email: {cart.User.Email} Product Name: {cart.Product.Name} Product Price: {cart.Product.Price} Quantity: {cart.Quantity}");
             }
 
         }
