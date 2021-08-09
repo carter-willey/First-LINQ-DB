@@ -2,6 +2,7 @@
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using DatabaseFirstLINQ.Models;
+using System.Collections.Generic;
 
 namespace DatabaseFirstLINQ
 {
@@ -35,8 +36,8 @@ namespace DatabaseFirstLINQ
             //ProblemEighteen();
             //ProblemNineteen();
             //ProblemTwenty();
-            BonusOne();
-            //BonusTwo();
+            //BonusOne();
+           BonusTwo();
             //BonusThree();
             Console.ReadLine();
         }
@@ -348,6 +349,75 @@ namespace DatabaseFirstLINQ
         {
             // Write a query that finds the total of every users shopping cart products using LINQ.
             // Display the total of each users shopping cart as well as the total of the toals to the console.
+            var shoppingCart = _context.ShoppingCarts.Include(sc => sc.Product).Include(sc => sc.User).OrderBy(sc => sc.UserId);
+            var users = _context.ShoppingCarts.Select(sc => sc.User).Distinct();
+            List<User> userList = new List<User>();
+            decimal total = 0;
+            decimal grandTotal = 0;
+            int index = 0;
+            foreach (User user in users)
+            {
+                userList.Add(user);
+            }
+            ShoppingCart last = shoppingCart.Last();
+            foreach(ShoppingCart item in shoppingCart)
+            {
+                if (item.UserId == userList.ElementAt(index).Id)
+                {
+                    total += item.Product.Price * (decimal)item.Quantity;
+                    grandTotal += item.Product.Price * (decimal)item.Quantity;
+
+                }
+                if (item.UserId != userList.ElementAt(index).Id)
+                {
+                    Console.WriteLine($"{userList.ElementAt(index).Email} has ${total} in their cart");
+                    total = 0;
+                    index++;
+                    if (item.UserId == userList.ElementAt(index).Id)
+                    {
+                        total += item.Product.Price * (decimal)item.Quantity;
+                        grandTotal += item.Product.Price * (decimal)item.Quantity;
+                        
+                    }
+                    if (item == last)
+                    {
+                        Console.WriteLine($"{userList.ElementAt(index).Email} has ${total} in their cart");
+                    }
+
+                }
+                    
+                }
+                
+                
+
+               
+
+                //if (index == 0)
+                //{
+                //    total += cartList.ElementAt(index).Product.Price;
+                //    grandTotal += item.Product.Price * (decimal)item.Quantity;
+                //    index++;
+                //}
+                //else if (item.UserId != cartList.ElementAt(index - 1).UserId)
+                //{
+                //    Console.WriteLine(total);
+                //    total = 0;
+                //    total += cartList.ElementAt(index).Product.Price;
+                //    grandTotal += item.Product.Price * (decimal)item.Quantity;
+
+                //}
+                //else if (item.UserId == cartList.ElementAt(index).UserId)
+                //{
+                //    total += cartList.ElementAt(index).Product.Price;
+                //    grandTotal += item.Product.Price * (decimal)item.Quantity;
+                //    index++;
+                //}
+
+
+
+            
+            Console.WriteLine(grandTotal);
+
         }
 
         // BIG ONE
